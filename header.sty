@@ -1,0 +1,221 @@
+% Copyright © 2012-2015 Timm Behner <behner@cs.uni-bonn.de>
+
+% This is my general purpose LaTeX header file for writing German documents.
+% Ideally, you include this using a simple ``\input{header.tex}`` in your main
+% document and start with ``\title`` and ``\begin{document}`` afterwards.
+
+% If you need to add additional packages, I recommend not doing this in this
+% file, but in your main document. That way, you can just drop in a new
+% ``header.tex`` and get all the new commands without having to merge manually.
+
+% Since this file encorporates a CC-BY-SA fragment, this whole files is
+% licensed under the CC-BY-SA license.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              Begin of package                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ProvidesPackage{header}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              Option processing                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareOption{sfcaption}{
+    \setkomafont{caption}{\sffamily}
+    \setkomafont{captionlabel}{\usekomafont{caption}}
+}
+
+% Declare a switch for bibliography at the end of the document.
+\newif\if@bibatend\@bibatendfalse
+\DeclareOption{bibatend}{
+  \@bibatendtrue
+}
+
+% Declare a switch for a colored document.
+\newif\if@color\@colorfalse
+\DeclareOption{color}{
+  \@colortrue
+}
+
+\newif\if@beamer\@beamerfalse
+\DeclareOption{beamer}{
+  \@beamertrue
+}
+
+\ProcessOptions\relax
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                Miscellaneous                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{ifluatex}
+
+\RequirePackage{graphicx}
+
+\RequirePackage{booktabs}
+
+\RequirePackage{enumerate}
+
+\RequirePackage{float}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                Locale, date                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{babel}
+\RequirePackage[iso]{isodate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          Margins and other spacing                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage[parfill]{parskip}
+\RequirePackage{setspace}
+
+\ifluatex
+\else
+    \RequirePackage[activate]{microtype}
+\fi
+
+\setlength{\columnsep}{2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                    Color                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if@beamer
+\else
+    \RequirePackage[usenames, dvipsnames]{xcolor}
+\fi
+
+\colorlet{darkred}{red!70!black}
+\colorlet{darkblue}{blue!70!black}
+\colorlet{darkgreen}{green!40!black}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               Input encoding                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifluatex
+\else
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}
+\fi
+
+\RequirePackage{csquotes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         Hyperrefs and PDF metadata                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{hyperref}
+
+% This sets the author in the properties of the PDF as well. If you want to
+% change it, just override it with another ``\hypersetup`` call.
+\hypersetup{
+    breaklinks=false,
+    colorlinks=true,
+    pdfauthor={Martin Ueding},
+}
+
+\if@color
+    \hypersetup{
+        citecolor=darkgreen,
+        linkcolor=darkblue,
+        menucolor=black,
+        urlcolor=darkblue,
+    }
+\else
+    \hypersetup{
+        citecolor=black,
+        linkcolor=black,
+        menucolor=black,
+        urlcolor=black,
+    }
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               Math Operators                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% AMS environments like ``align`` and theorems like ``proof``.
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+
+% Common math constructs like partial derivatives.
+\newcommand\abs[1]{\left| #1 \right|}
+\newcommand\cbr[1]{\left\{ #1 \right\}}
+\newcommand\del[1]{\left( #1 \right)}
+\newcommand\od[2]{\frac{\dif {#1}}{\dif {#2}}}
+\newcommand\odx[3]{\frac{\dif^{#1} {#2}}{\dif {#3}^{#1}}}
+\newcommand\pd[2]{\frac{\partial {#1}}{\partial {#2}}}
+\newcommand\pdx[3]{\frac{\partial^{#1} {#2}}{\partial {#3}^{#1}}}
+\newcommand\sbr[1]{\left[ #1 \right]}
+\newcommand\eval[1]{\left. #1 \right|}
+\newcommand\dif{\mathop{}\!\mathrm d}
+\newcommand\Dif{\mathop{}\!\mathrm D}
+
+% Word like operators.
+\DeclareMathOperator{\acosh}{arcosh}
+\DeclareMathOperator{\arcosh}{arcosh}
+\DeclareMathOperator{\arcsinh}{arsinh}
+\DeclareMathOperator{\arsinh}{arsinh}
+\DeclareMathOperator{\asinh}{arsinh}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\sech}{sech}
+\DeclareMathOperator{\tr}{tr}
+\renewcommand{\Im}{\mathop{{}\mathrm{Im}}\nolimits}
+\renewcommand{\Re}{\mathop{{}\mathrm{Re}}\nolimits}
+
+
+% Roman versions of “e” and “i” to serve as Euler's number and the imaginary
+% constant.
+\newcommand{\eup}{\mathrm e}
+\newcommand{\iup}{\mathrm i}
+
+% Symbols for the various mathematical fields (natural numbers, integers,
+% rational numbers, real numbers, complex numbers, prime numbers).
+\newcommand{\C}{\text{\bfseries\sffamily C}}
+\newcommand{\N}{\text{\bfseries\sffamily N}}
+\newcommand{\Q}{\text{\bfseries\sffamily Q}}
+\newcommand{\R}{\text{\bfseries\sffamily R}}
+\newcommand{\Z}{\text{\bfseries\sffamily Z}}
+
+% Mathematician's notation for the inner (scalar, dot) product.
+\newcommand{\bracket}[1]{\langle #1 \rangle}
+\newcommand{\Bracket}[1]{\left\langle #1 \right\rangle}
+\newcommand{\inner}[2]{\bracket{#1, #2}}
+\newcommand{\Inner}[2]{\Bracket{#1, #2}}
+
+% Placeholders.
+\newcommand{\fehlt}{\textcolor{darkred}{Hier fehlen noch Inhalte.}}
+
+% Separator for equations on a single line.
+\newcommand{\eqnsep}{,\qquad}
+
+\newcommand\inv{^{-1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  Headings                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This will set fancy headings to the top of the page. The page number will be
+% accompanied by the total number of pages. That way, you will know if any page
+% is missing.
+%
+% If you do not want this for your document, you can just use
+% ``\pagestyle{plain}``.
+
+\if@beamer
+\else
+    \RequirePackage{scrpage2}
+
+    \pagestyle{scrheadings}
+    \automark{section}
+    \chead{}
+    \ihead{}
+    \ohead{\rightmark}
+    \setheadsepline{.4pt}
+\fi
+
+\endinput
