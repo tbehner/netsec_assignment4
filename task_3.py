@@ -5,10 +5,7 @@
 
 import argparse
 import hashlib
-import scapy
-from scapy.all import *
 from radiusattr import *
-import socket
 
 def pad_with_zeros(barray, length):
     size = length - len(barray)
@@ -64,31 +61,33 @@ def calculate_short_password_attribute(password, shared_secret, requ_auth):
     c = xor(b, pad_with_zeros(password,16))
     return c
 
-def send_package(password, shared_secret):
-    msg_auth = get_request_authentication()
-    enc_user_password = RadiusAttr.Encrypt_Pass(password,shared_secret,msg_auth)
+def brute_force_secret(password, authenticator, dictionary, encpassword):
+    with open(dictionary, 'r') as d:
+        for line in d:
+            for word in re.compile("\w+").findall(line):
+                word = bytearray(word)
+                print(word)
+                enc_w = calculate_short_password_attribute(password, word, authenticator)
+                if RadiusAttr.Encrypt_Pass(password, authenticator, word) == encpassword:
+                    return word
 
-    user_name_avp = RadiusAttr(type=1, value=b'behner')  
-    # I think this is where the password attribute goes to
-    user_pw_avp = RadiusAttr(type=2, value=enc_user_password)
-    # basicaly I have no clue where this address comes from
-    nas_ip_addr_avp = RadiusAttr(type=4, value=inet_pton(socket.AF_INET,'172.17.0.19'))
-    nas_port_avp = RadiusAttr(type=5, value=socket.inet_aton('42'))
-    msg_auth_avp = RadiusAttr(type=80, value=msg_auth)
+def bytearray_join(glue, list_of_barrays):
+    res = list_of_barrays[0]
+    for i in range(1,len(list_of_barrays)):
+        res += glue + list_of_barrays[i]
+    return res
 
-    avp = str(user_name_avp)+str(user_pw_avp)+\
-        str(nas_ip_addr_avp)+str(nas_port_avp)+\
-        str(msg_auth_avp)
-
-    send(IP(dst='10.0.0.10')/UDP(sport=33726,dport=1812)/Radius(code=1,authenticator=msg_auth,id=180)/avp)
-
-# TODO: 
-#   * antwort von orange abfragen
-#   * automatisieren und shared secret herausfinden
+def rm_colons(string):
+    return ''.join(string.split(':'))
+ #   return bytearray_join(b'', string.split(':'))
 
 def main():
     options = _parse_args()
-    send_package(b'',b'testno42')
+    passwd = options.password
+    auth = rm_colons(options.authenticator)
+    enc_pw = rm_colons(options.encrypted_password)
+    print( passwd, auth, enc_pw)
+    brute_force_secret(options.password, options.authenticator, './rfc7511.txt', options.encrypted_password)
 
 def _parse_args():
     """
@@ -98,6 +97,9 @@ def _parse_args():
     :rtype: Namespace
     """
     parser = argparse.ArgumentParser(description="")
+    parser.add_argument('password'           , type=str)
+    parser.add_argument('authenticator'      , type=str)
+    parser.add_argument('encrypted_password' , type=str)
 
     return parser.parse_args()
 
