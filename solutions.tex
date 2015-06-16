@@ -56,7 +56,24 @@
     \end{figure}
 \end{exercise}
 
+\setcounter{exercise}{4}
+\begin{exercise}
+    \begin{enumerate}[a)]
+        \item \verb$task_5.py$ is an implementation of CBC with ROT-128 to
+            produce a MAC. For an example output with the MAC of the exercise
+            sheet see \verb$task_5_pdfmac.txt$
+        \item For ECB and CTR the MAC would consist of $C_1, \cdots , C_n$
+            since every single $C_i$ would be needed to check the integrity of
+            the document. This would lead either to a very large MAC or to a
+            very short length of every $C_i$ which would lead to more
+            collisions and thus would be a weaker MAC.
 
+            With CBC only the last $C_n$ is needed to check the integrity of
+            the document since a change in any $P_1, \cdots, P_n$ would lead to
+            a different output. Since only the last $C_n$ chunk is needed this
+            can be large enough to make collisions very unlikely.
+    \end{enumerate}
+\end{exercise}
 \end{document}
 
 % vim: spell spelllang=en tw=79
