@@ -5,7 +5,7 @@
 
 import argparse
 import hashlib
-from radiusattr import *
+import re
 
 def pad_with_zeros(barray, length):
     size = length - len(barray)
@@ -46,10 +46,11 @@ def xor(a,b):
     return bytearray(x^y for x, y in zip(a,b))
 
 def get_request_authentication():
+    """ returns 16 random bytes """
     return os.urandom(16)
 
 def calculate_short_password_attribute(password, shared_secret, requ_auth):
-    # enforce every input to be a bytestring
+    """calculate the encrypted password for passwords with less than 16 bytes"""
     password = bytearray(password)
     shared_secret = bytearray(shared_secret)
     requ_auth = bytearray(requ_auth)
@@ -64,12 +65,16 @@ def brute_force_secret(password, authenticator, dictionary, encpassword):
         for line in d:
             for word in re.compile("\w+").findall(line):
                 word = bytearray(word)
+                # calculate_short_password_attribute was used since our
+                # passwords were shorter than 16 bytes
                 enc_w = bytetohex(calculate_short_password_attribute(password, word, authenticator))
                 if  enc_w == encpassword:
                     print( '{} = {}'.format(enc_w, encpassword))
                     return word
+        return None
 
 def bytearray_join(glue, list_of_barrays):
+    """ returns the list of bytearrays glued together with glue"""
     res = list_of_barrays[0]
     for i in range(1,len(list_of_barrays)):
         res += glue + list_of_barrays[i]
@@ -85,10 +90,7 @@ def main():
     # those have to be removed bevor processing
     auth = rm_colons(options.authenticator)
     enc_pw = rm_colons(options.encrypted_password)
-    print('Password: {}'.format(passwd))
-    print('Authenticator: {}'.format(auth))
-    print('Encrypted PW: {}'.format(enc_pw))
-    brute_force_secret(passwd, auth, './rfc7511.txt', enc_pw)
+    print(brute_force_secret(passwd, auth, './rfc7511.txt', enc_pw))
 
 def _parse_args():
     """

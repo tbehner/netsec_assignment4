@@ -57,6 +57,16 @@
 \end{exercise}
 
 \begin{exercise}
+    For sniffed traffic during the authentication see
+    \verb$behner_traffic.pcap$. The packet 13 (e.g. the RADIUS request)
+    contains the encrypted password and the message authenticator which was
+    used for encryption. 
+    Provided the password, the encrypted password and the message authenticator
+    the script \verb$task_3.py$ checks for every word in \verb$rfc7511.py$ if
+    the password encrypted with this word and the message authenticator equals
+    the encrypted password. 
+    But this is not the case for any word in the file, but we could not find
+    any mistake in our implementation either.
 \end{exercise}
 
 \begin{exercise}\hfill
