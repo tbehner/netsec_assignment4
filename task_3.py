@@ -15,9 +15,9 @@ def pad_with_zeros(barray, length):
     else:
         return barray
 
-'''
-I assume that 16 octets means 16 bytes
-'''
+def bytetohex(bytestr):
+    return ''.join('{:02x}'.format(x) for x in bytestr)
+
 def split_to_16bytes(bytestring):
     chunks = []
     if len(bytestring) % 16 != 0:
@@ -40,9 +40,6 @@ def calculate_password_attribute(password, shared_secret, requ_auth):
         tmp_c = hashlib.md5(c + b)
         b = hashlib.md5(shared_secret+tmp_c)
         password_attribute = tmp_c
-    '''
-    Is the last tmp_c or the last b the password attribute?
-    '''
     return password_attribute
 
 def xor(a,b):
@@ -57,18 +54,19 @@ def calculate_short_password_attribute(password, shared_secret, requ_auth):
     shared_secret = bytearray(shared_secret)
     requ_auth = bytearray(requ_auth)
 
+
     b = bytearray(hashlib.md5(shared_secret + requ_auth).digest())
     c = xor(b, pad_with_zeros(password,16))
     return c
 
 def brute_force_secret(password, authenticator, dictionary, encpassword):
-    with open(dictionary, 'r') as d:
+    with open(dictionary, 'rb') as d:
         for line in d:
             for word in re.compile("\w+").findall(line):
                 word = bytearray(word)
-                print(word)
-                enc_w = calculate_short_password_attribute(password, word, authenticator)
-                if RadiusAttr.Encrypt_Pass(password, authenticator, word) == encpassword:
+                enc_w = bytetohex(calculate_short_password_attribute(password, word, authenticator))
+                if  enc_w == encpassword:
+                    print( '{} = {}'.format(enc_w, encpassword))
                     return word
 
 def bytearray_join(glue, list_of_barrays):
@@ -78,16 +76,19 @@ def bytearray_join(glue, list_of_barrays):
     return res
 
 def rm_colons(string):
-    return ''.join(string.split(':'))
- #   return bytearray_join(b'', string.split(':'))
+    return bytearray_join(b'', string.split(':'))
 
 def main():
     options = _parse_args()
     passwd = options.password
+    # wiresharks inserts ':' on every 16-bit block
+    # those have to be removed bevor processing
     auth = rm_colons(options.authenticator)
     enc_pw = rm_colons(options.encrypted_password)
-    print( passwd, auth, enc_pw)
-    brute_force_secret(options.password, options.authenticator, './rfc7511.txt', options.encrypted_password)
+    print('Password: {}'.format(passwd))
+    print('Authenticator: {}'.format(auth))
+    print('Encrypted PW: {}'.format(enc_pw))
+    brute_force_secret(passwd, auth, './rfc7511.txt', enc_pw)
 
 def _parse_args():
     """
@@ -97,9 +98,9 @@ def _parse_args():
     :rtype: Namespace
     """
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument('password'           , type=str)
-    parser.add_argument('authenticator'      , type=str)
-    parser.add_argument('encrypted_password' , type=str)
+    parser.add_argument('password'           , type=bytearray)
+    parser.add_argument('authenticator'      , type=bytearray)
+    parser.add_argument('encrypted_password' , type=bytearray)
 
     return parser.parse_args()
 
