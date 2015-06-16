@@ -1,0 +1,22 @@
+Task 4.4
+    a)
+        1. Authentication by finger print
+            Use your finger print instead of a password.
+            This method is e.g. used by smartphones and Laptops such as iPhone 6.
+            A big advantage is that you can't forget your finger print and the authentication can be much faster than typing in a password.
+            A disadvantage is that with currently used sensors, this method can be hacked very easily by printing the finger print line on a piece of paper and let the sensor scan this paper.
+        
+        2. Authentication by swipe card / chip card
+            This method is used by credit and debit cards. Mostly together with a PIN or signature, but for smaller amounts there is also the option to use this method even without a second verification.
+            An advantage is that this method is very fast and easy to use.
+            A disadvantage is that if the card gets stolen, the thief can use it to get money from your bank account, because the one who has the card card (even if it is not the owner) has access to the account.
+            
+        3. Authentication by MAC-Address
+            This is used in wireless networks, most common additionally to a password, to allow computers to join the network.
+            It gives a certain amount of security, although it can be changed by hackers, the MAC address of a network device is usually fixed, so only registered devices can access the network.
+            A disadvantage is that the administrative costs raise, since every device has to be set up in the back end.
+            
+    b)
+        Authentication by MAC-Address is also an example for a two-factor authentication, when a common password is used besides the MAC address comparison.
+        This raises the security of networks, which is a plus. The disadvantage is the higher costs mentioned in a)
+        
